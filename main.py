@@ -77,18 +77,29 @@ def search_embed(query,top_k=5):
     return results
 
 def llm_process(query:str,results:str):
-    prompt=f"""
-    You are a Data Structure Algorithm DSA expert.Based on user query and retrived points from DSA book.
-    ##User Query:
+    prompt = f"""
+    Question:
     {query}
-    ##Retrieved Points:
+
+    Context:
     {results}
 
-    ## Task understand and answer the query.
+    Give concise answer with steps and time complexity.
     """
 
-    payload={
-        "text":prompt
+    payload = {
+        "messages": [
+            {
+                "role": "system",
+                "content": "You are a precise Data Structures and Algorithms expert. Always provide complete answers with full pseudo code and time complexity."
+            },
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
+        "max_tokens": 300,
+        "temperature": 0.3
     }
 
     headers={
@@ -124,7 +135,7 @@ class Query(BaseModel):
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # change with frontend url for security
+    allow_origins=["*"],  # change with frontend url
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
